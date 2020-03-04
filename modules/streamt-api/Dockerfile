@@ -7,7 +7,7 @@ ARG PIP_TRUSTED_HOST
 # Install required packages
 COPY requirements.txt ./requirements.txt
 RUN apk add postgresql-dev \
-    && apk add --virtual .build-deps python3-dev musl-dev \
+    && apk add --virtual .build-deps libffi-dev gcc python3-dev musl-dev \
     && pip install --no-cache -r requirements.txt \
     && rm requirements.txt \
     && apk del .build-deps

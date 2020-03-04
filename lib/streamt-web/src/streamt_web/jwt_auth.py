@@ -13,6 +13,9 @@ from . import responses
 class JWTManager:
     '''
     JWTManager is custom solution for managing authentication to api.
+
+    Override the load_user and expire_token functions for login/logout to
+    function properly.
     '''
     secret_key = None
     jwt_lifespan = None  # num minutes token is valid for after being issued
@@ -31,6 +34,17 @@ class JWTManager:
     def load_user(self, id: str) -> object:
         '''Implement this function to enable JWT protected endpoints'''
         pass
+
+    @staticmethod
+    def default_load_user_fn(session, user_model):
+        '''
+        Default load user fn. Requires SQLalchemy session and a user model with
+        the unique column 'login_id'.
+        '''
+        def load_user(id):
+            return session.query(user_model)\
+                .filter_by(login_id=id).one_or_none()
+        return load_user
 
     def expire_token(self, id: str) -> None:
         '''Implement this function to invalidate JWT token'''
