@@ -19,14 +19,15 @@ class Stream(base.Base):
     # Metadata
     name = Column(String(200))
     created_at = Column(DateTime, default=datetime.utcnow)
-    duration = Column(Integer)  # Duration of video in seconds
+    ended_at = Column(DateTime)
 
     # Media
-    filename = Column(String(500), nullable=False)
     thumbnail = Column(String(100))
 
     # Relationships
     user_id = Column(ForeignKey('users.id'), nullable=False)
+    user = relationship('User', back_populates='streams')
+    clips = relationship('Clip', back_populates='stream')
 
 
 class Clip(base.Base):
@@ -43,6 +44,10 @@ class Clip(base.Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     start = Column(Float(precision=4))  # Second of start clip
     end = Column(Float(precision=4))  # Second of end clip
+
+    # Relationships
+    stream_id = Column(ForeignKey('streams.id'), nullable=False)
+    stream = relationship('Stream', back_populates='clips')
 
 
 class Highlight(base.Base):

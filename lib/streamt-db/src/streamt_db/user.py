@@ -25,3 +25,6 @@ class User(base.Base):
     email_verified = Column(Boolean, default=False)
     password_hash = Column(String(60), nullable=False)
     stream_key = Column(String(50), unique=True)
+
+    # Relationships
+    streams = relationship('Stream', back_populates='user')
