@@ -66,4 +66,4 @@ class StreamManager:
 
     def _is_stream_live(self, stream: Stream):
         '''Return if stream has been started, and is still live'''
-        return stream.ended_at is not None
+        return stream.ended_at is None
