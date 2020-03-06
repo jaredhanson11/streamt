@@ -45,8 +45,8 @@ class StreamManager:
                 )
                 self.session.add(new_stream)
                 self.session.commit()
-                logger.info('User:%d starting new stream named:%s.',
-                            user.id, user.name)
+                logger.info('User:%d starting new stream:%d.',
+                            user.id, new_stream.id)
                 return new_stream
 
     def end_stream(self, stream_id) -> None:
