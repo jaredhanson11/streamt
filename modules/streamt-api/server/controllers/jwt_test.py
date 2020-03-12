@@ -13,7 +13,7 @@ class JWTTest(Resource):
     def post(self):
         '''Login'''
         user = self.account_manager.authenticate_user(
-            'jred0011@gmail.com', 'test_pw')
+            'test@test.com', 'test')
         jwt_token = jwt.encode_jwt(user.login_id)
         return responses.success({'token': jwt_token})
 

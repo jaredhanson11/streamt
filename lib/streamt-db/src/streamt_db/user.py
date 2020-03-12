@@ -21,10 +21,11 @@ class User(base.Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Login info and stream_key
-    email = Column(String(320), unique=True)
+    email = Column(String(320), nullable=False, unique=True)
     email_verified = Column(Boolean, default=False)
     password_hash = Column(String(60), nullable=False)
     stream_key = Column(String(50), unique=True)
 
     # Relationships
     streams = relationship('Stream', back_populates='user')
+    highlights = relationship('Highlight', back_populates='owner')

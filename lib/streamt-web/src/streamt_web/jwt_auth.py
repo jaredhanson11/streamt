@@ -1,6 +1,7 @@
 '''
 JWT related tasks.
 '''
+import logging
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 
@@ -8,6 +9,8 @@ from flask import request, g
 import jwt
 
 from . import responses
+
+logger = logging.getLogger(__name__)
 
 
 class JWTManager:

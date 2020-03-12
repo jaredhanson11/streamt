@@ -62,6 +62,8 @@ class Highlight(base.Base):
 
     # Relationships
     clips = relationship('ClipToHighlight')
+    owner_id = Column(ForeignKey('users.id'), nullable=False)
+    owner = relationship('User', back_populates='highlights')
 
 
 class ClipToHighlight(base.Base):

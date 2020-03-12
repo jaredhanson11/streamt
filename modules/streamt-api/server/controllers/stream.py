@@ -3,20 +3,53 @@ Api endpoints handling live streams.
 '''
 import logging
 
-from flask import request
+from flask import request, g
 from flask_restful import Resource
 
 from streamt_core.stream_management import StreamManager
 from streamt_web import responses
 
-from .. import db
+from .. import jwt, db
 
 logger = logging.getLogger(__name__)
+
+stream_manager: StreamManager = StreamManager(db.session)
+
+
+class StreamListController(Resource):
+    '''/streams API resource'''
+
+    @jwt.requires_auth
+    def get(self):
+        '''Get list of streams'''
+        user_streams = stream_manager.get_user_streams(g.user)
+        ret = {'streams': user_streams}
+        return responses.success(ret)
+
+    @jwt.requires_auth
+    def post(self):
+        '''Add a new stream'''
+        pass
+
+
+class StreamController(Resource):
+    '''/streams/<id> API resource'''
+
+    @jwt.requires_auth
+    def get(self, id):
+        pass
+
+    @jwt.requires_auth
+    def put(self, id):
+        pass
+
+    @jwt.requires_auth
+    def delete(self, id):
+        pass
 
 
 class StreamStartController(Resource):
     '''API for publishing streams started.'''
-    stream_manager: StreamManager = StreamManager(db.session)
 
     def post(self):
         '''
@@ -26,7 +59,7 @@ class StreamStartController(Resource):
         '''
         logger.debug('Posted start data: %s', str(request.form.to_dict()))
         stream_key = request.form['name']
-        new_stream = self.stream_manager.start_stream(stream_key)
+        new_stream = stream_manager.start_stream(stream_key)
         if new_stream:
             redirect_headers = {
                 'Location': f'rtmp://127.0.0.1/published/{new_stream.id}'}
@@ -41,7 +74,6 @@ class StreamStopController(Resource):
     This is in a different class than StreamStartController since both
     callbacks by nginx-rtmp-module are POST requests.
     '''
-    stream_manager: StreamManager = StreamManager(db.session)
 
     def post(self):
         '''
@@ -50,5 +82,5 @@ class StreamStopController(Resource):
         '''
         logger.debug('Posted stop data: %s', str(request.form.to_dict()))
         stream_id = request.form['name']
-        self.stream_manager.end_stream(stream_id)
+        stream_manager.end_stream(stream_id)
         return responses.success('Stream ended.')

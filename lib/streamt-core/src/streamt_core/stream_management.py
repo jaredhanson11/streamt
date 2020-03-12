@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 from streamt_db.user import User
@@ -16,6 +16,22 @@ class StreamManager:
 
     def __init__(self, db_session):
         self.session = db_session
+
+    def get_user_stream(self, user: User, stream_id) -> Optional[dict]:
+        '''
+        Get stream object requested by given user_id, or None if doesn't exist
+        or the user doesn't have permissions to view the stream.
+        '''
+        stream: Stream = self.session.query(Stream).get(stream_id)
+        if stream and stream.user_id == user.id:
+            return self._get_stream_model(stream)
+        return None
+
+    def get_user_streams(self, user: User) -> List[dict]:
+        '''Get list of streams for user'''
+        return list(
+            map(lambda stream: self._get_stream_model(stream), user.streams)
+        )
 
     def start_stream(self, stream_key) -> Optional[Stream]:
         '''
@@ -36,7 +52,7 @@ class StreamManager:
                 return None
             else:
                 start = datetime.utcnow()
-                start_time = start.strftime("%Y%m-%d_%H:%M:%S")
+                start_time = start.strftime("%Y-%m-%d %H:%M:%S")
                 name = f'Stream starting {start}'
                 new_stream = Stream(
                     name=name,
@@ -63,6 +79,19 @@ class StreamManager:
                 stopped.', stream_id)
         else:
             logger.info('Stream:%s does not exist, can\'t stop it', stream_id)
+
+    def _get_stream_model(self, stream: Stream):
+        '''Return API safe model for Stream object'''
+        ret: dict = {}
+        ret['id'] = stream.id
+        ret['name'] = stream.name
+        ret['created_at'] = int(stream.created_at.timestamp()) if \
+            stream.created_at else None
+        ret['ended_at'] = int(stream.ended_at.timestamp()) if stream.ended_at \
+            else None
+        ret['thumbnail'] = stream.thumbnail
+        ret['clips'] = list(map(lambda clip: clip.id, stream.clips))
+        return ret
 
     def _is_stream_live(self, stream: Stream):
         '''Return if stream has been started, and is still live'''

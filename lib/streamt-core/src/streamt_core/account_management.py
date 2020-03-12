@@ -6,8 +6,11 @@ go here.
 '''
 import bcrypt
 import uuid
+import logging
 
 from streamt_db.user import User
+
+logger = logging.getLogger(__name__)
 
 
 class AccountManager:
@@ -30,6 +33,8 @@ class AccountManager:
         new_user.email = email
         new_user.password_hash = self._encrypt_pw(password)
         new_user.last_name = l_name
+        self.session.add(new_user)
+        self.session.commit()
         return new_user
 
     def authenticate_user(self, email, password) -> User:
