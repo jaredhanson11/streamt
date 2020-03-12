@@ -23,6 +23,9 @@ class AccountManager:
     def __init__(self, db_session):
         self.session = db_session
 
+    def get_user(self, user: User):
+        return self._get_user_model(user)
+
     def create_new_user(self, email, password, f_name=None, l_name=None):
         '''Creates and returns a new user record.'''
         # Metadata
@@ -59,3 +62,12 @@ class AccountManager:
     def _generate_stream_key(self):
         '''Generate stream key'''
         return uuid.uuid4()
+
+    def _get_user_model(self, user: User):
+        '''Return API safe model for User object'''
+        ret: dict = {}
+        ret['id'] = user.id
+        ret['first_name'] = user.first_name
+        ret['last_name'] = user.last_name
+        ret['email'] = user.email
+        return ret

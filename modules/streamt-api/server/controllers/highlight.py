@@ -14,8 +14,7 @@ class HighlightListController(Resource):
 
     @jwt.requires_auth
     def get(self):
-        ret = {'highlights': highlight_manager.get_user_highlights(g.user)}
-        return responses.success(ret)
+        return responses.success(highlight_manager.get_user_highlights(g.user))
 
     @jwt.requires_auth
     def post(self):

@@ -23,8 +23,7 @@ class StreamListController(Resource):
     def get(self):
         '''Get list of streams'''
         user_streams = stream_manager.get_user_streams(g.user)
-        ret = {'streams': user_streams}
-        return responses.success(ret)
+        return responses.success(user_streams)
 
     @jwt.requires_auth
     def post(self):

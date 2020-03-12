@@ -14,7 +14,7 @@ class ClipListController(Resource):
 
     @jwt.requires_auth
     def get(self):
-        ret = {'clips': clip_manager.get_user_clips(g.user)}
+        ret = clip_manager.get_user_clips(g.user)
         return responses.success(ret)
 
     @jwt.requires_auth
@@ -24,8 +24,8 @@ class ClipListController(Resource):
         name = post_data.get('name')
         start = float(post_data.get('start'))
         end = float(post_data.get('end'))
-        ret = {'clip': clip_manager.create_clip(
-            stream_id=stream_id, name=name, start=start, end=end)}
+        ret = clip_manager.create_clip(
+            stream_id=stream_id, name=name, start=start, end=end)
         return responses.success(ret, 201)
 
 
@@ -36,8 +36,7 @@ class ClipController(Resource):
     def get(self, id):
         clip_json = clip_manager.get_user_clip(g.user, id)
         if clip_json:
-            ret = {'clip': clip_json}
-            return responses.success(ret, 200)
+            return responses.success(clip_json, 200)
         return responses.client_error('Clip can not be found.', 404)
 
     @jwt.requires_auth

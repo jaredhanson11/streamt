@@ -7,6 +7,8 @@ from .controllers.stream import StreamListController, StreamController, \
     StreamStopController, StreamStartController
 from .controllers.clip import ClipListController, ClipController
 from .controllers.highlight import HighlightListController, HighlightController
+from .controllers.login import LoginController, SignupController
+from .controllers.home import HomeController
 
 API_V1_PREFIX = '/api/v1.0'
 
@@ -21,6 +23,13 @@ def add_routes(api: Api):
     Sets up all the api routes.
     '''
     api.add_resource(JWTTest, v1_url('/test'))
+
+    # Login/Signup
+    api.add_resource(LoginController, v1_url('/login'))
+    api.add_resource(SignupController, v1_url('/signup'))
+
+    # Home
+    api.add_resource(HomeController, v1_url('/home'))
 
     # Streams
     api.add_resource(StreamListController, v1_url('/streams'))
