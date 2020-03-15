@@ -24,6 +24,8 @@ class JWTManager:
     jwt_lifespan = None  # num minutes token is valid for after being issued
     jwt_freshspan = None  # num minutes token is "fresh"
     jwt_algorithm = 'HS256'
+    jwt_cookie_name = 'streamt-jwt'
+    jwt_header_name = 'X-JWT-TOKEN'
 
     def __init__(self, app):
         secret_key = app.config.get('SECRET_KEY')
@@ -55,12 +57,14 @@ class JWTManager:
 
     def requires_auth(self, f):
         '''
-        Requires non-expired JWT token in the 'X-JWT-TOKEN' header.
+        Requires non-expired JWT token in the request cookie/header.
         Token must correspond to a valid user, defined by load_user function.
         '''
         @wraps(f)
         def decorator(*args, **kwargs):
-            token = request.headers.get('X-JWT-TOKEN', None)
+            token = request.cookies.get(self.jwt_cookie_name, None)
+            token = request.headers.get(
+                self.jwt_header_name) if token is None else token
             jwt_data = self._decode_jwt(token) if token else None
             jwt_id = jwt_data.get('id') if jwt_data else None
             curr_user = self.load_user(jwt_id) if jwt_id else None
@@ -73,12 +77,14 @@ class JWTManager:
 
     def requires_fresh_auth(self, f):
         '''
-        Requires non-expired and fresh JWT token in the 'X-JWT-TOKEN' header.
+        Requires non-expired and fresh JWT token in the request cookie/header.
         Token must correspond to a valid user, defined by load_user function.
         '''
         @wraps(f)
         def decorator(*args, **kwargs):
-            token = request.headers.get('X-JWT-TOKEN', None)
+            token = request.cookies.get(self.jwt_cookie_name, None)
+            token = request.headers.get(
+                self.jwt_header_name) if token is None else token
             jwt_data = self._decode_jwt(token) if token else None
             jwt_id = jwt_data.get('id') if jwt_data else None
             curr_user = self.load_user(jwt_id) if jwt_id else None

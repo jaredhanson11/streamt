@@ -17,14 +17,23 @@ account_manager: AccountManager = AccountManager(db.session)
 
 
 class LoginController(Resource):
+
+    @jwt.requires_auth
+    def get(self):
+        ret = account_manager.get_user(g.user)
+        return responses.success(ret, 200)
+
     def post(self):
         post_data = request.get_json()
         email = post_data.get('email')
         password = post_data.get('password')
         user = account_manager.authenticate_user(email, password)
         jwt_token = jwt.encode_jwt(user.login_id)
+        cookie_name = jwt.jwt_cookie_name
         ret = {'token': jwt_token}
-        return responses.success(ret, 200)
+        return responses.success(ret, 200, {
+            'Set-Cookie': f'{cookie_name}={jwt_token}'
+        })
 
 
 class SignupController(Resource):
@@ -37,5 +46,8 @@ class SignupController(Resource):
         user = account_manager.create_new_user(
             email, password, first_name, last_name)
         jwt_token = jwt.encode_jwt(user.login_id)
+        cookie_name = jwt.jwt_cookie_name
         ret = {'token': jwt_token}
-        return responses.success(ret, 201)
+        return responses.success(ret, 201, {
+            'Set-Cookie': f'{jwt_cookie_name}={jwt_token}'
+        })
