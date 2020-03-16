@@ -35,6 +35,15 @@ class LoginController(Resource):
             'Set-Cookie': f'{cookie_name}={jwt_token}'
         })
 
+    @jwt.requires_auth
+    def delete(self):
+        '''Sets empty cookie (to simulate logging out)'''
+        ret = 'Successfully logged out.'
+        cookie_name = jwt.jwt_cookie_name
+        return responses.success(ret, 200, {
+            'Set-Cookie': f'{cookie_name}=\'\''''
+        })
+
 
 class SignupController(Resource):
     def post(self):
@@ -49,5 +58,5 @@ class SignupController(Resource):
         cookie_name = jwt.jwt_cookie_name
         ret = {'token': jwt_token}
         return responses.success(ret, 201, {
-            'Set-Cookie': f'{jwt_cookie_name}={jwt_token}'
+            'Set-Cookie': f'{cookie_name}={jwt_token}'
         })
