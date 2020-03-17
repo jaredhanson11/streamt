@@ -19,8 +19,8 @@ class HighlightListController(Resource):
     @jwt.requires_auth
     def post(self):
         post_data = request.get_json()
-        title = post_data.get('title')
-        new_highlight = highlight_manager.create_highlight(g.user, title=title)
+        name = post_data.get('name')
+        new_highlight = highlight_manager.create_highlight(g.user, name=name)
         return responses.success(new_highlight, 204)
 
 
