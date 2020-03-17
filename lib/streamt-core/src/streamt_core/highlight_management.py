@@ -37,14 +37,14 @@ class HighlightManager:
             hilite), user.highlights))
         return highlights
 
-    def create_highlight(self, user: User, title=None) -> Highlight:
+    def create_highlight(self, user: User, name=None) -> Highlight:
         '''
         Create a new highlight, for the user.
         '''
-        if title is None:
+        if name is None:
             created_time = datetime.utcnow().strftime("%Y-%m-%d_%H:%M:%S")
-            title = f'Highlight created {created_time}'
-        new_highlight = Highlight(title=title, owner=user)
+            name = f'Highlight created {created_time}'
+        new_highlight = Highlight(name=name, owner=user)
         self.session.add(new_highlight)
         self.session.commit()
         logger.info('User[id=%d] created new Highlight[id=%d]',
@@ -65,7 +65,7 @@ class HighlightManager:
         '''Return API safe model for Highlight object'''
         ret: dict = {}
         ret['id'] = highlight.id
-        ret['title'] = highlight.title
+        ret['name'] = highlight.name
         ret['created_at'] = int(highlight.created_at.timestamp()) if \
             highlight.created_at else None
         ret['clips'] = list(map(lambda c_2_h: c_2_h.clip_id, highlight.clips))

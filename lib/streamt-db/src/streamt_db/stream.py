@@ -57,7 +57,7 @@ class Highlight(base.Base):
     id = Column(Integer, primary_key=True)
 
     # Metadata
-    title = Column(String(100))
+    name = Column(String(100))
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
